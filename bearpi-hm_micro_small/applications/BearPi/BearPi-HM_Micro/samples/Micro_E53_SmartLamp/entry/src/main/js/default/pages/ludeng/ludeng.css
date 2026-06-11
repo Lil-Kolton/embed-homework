@@ -1,28 +1,15 @@
 /*
- * 智慧台灯 HAP 应用样式 - Kolton 2026-06-11
- * 配色方案：深色主题 + 青绿色主色 + 金色强调
+ * 智慧台灯 HAP 应用样式 - 修复版
+ * 移除不支持的 CSS 特性
  */
 
-/* 全局变量 */
 .container {
-    --primary-100: #00D2BE;
-    --primary-200: #00b4a1;
-    --primary-300: #007061;
-    --accent-100: #FFD700;
-    --accent-200: #917800;
-    --text-100: #FFFFFF;
-    --text-200: #e0e0e0;
-    --bg-100: #1C1C1C;
-    --bg-200: #2b2b2b;
-    --bg-300: #434343;
-
     width: 100%;
     height: 100%;
     flex-direction: column;
-    background-color: var(--bg-100);
+    background-color: #1C1C1C;
 }
 
-/* 顶部导航栏 */
 .header {
     width: 100%;
     height: 80px;
@@ -31,7 +18,7 @@
     justify-content: space-between;
     padding-left: 20px;
     padding-right: 20px;
-    background-color: var(--bg-200);
+    background-color: #2b2b2b;
 }
 
 .back-btn {
@@ -48,7 +35,7 @@
 
 .title {
     font-size: 34px;
-    color: var(--text-100);
+    color: #FFFFFF;
     font-weight: bold;
 }
 
@@ -57,7 +44,6 @@
     height: 60px;
 }
 
-/* 灯光主显示区 */
 .lamp-section {
     width: 100%;
     height: 200px;
@@ -73,16 +59,14 @@
     border-radius: 60px;
     justify-content: center;
     align-items: center;
-    transition: all 0.3s;
 }
 
 .lamp-on {
-    background-color: var(--accent-100);
-    box-shadow: 0 0 30px var(--accent-100);
+    background-color: #FFD700;
 }
 
 .lamp-off {
-    background-color: var(--bg-300);
+    background-color: #434343;
 }
 
 .lamp-icon {
@@ -92,11 +76,10 @@
 
 .status-text {
     font-size: 28px;
-    color: var(--text-200);
+    color: #e0e0e0;
     margin-top: 15px;
 }
 
-/* 数据卡片区 */
 .data-cards {
     width: 100%;
     flex-direction: row;
@@ -109,7 +92,7 @@
 .card {
     width: 45%;
     height: 100px;
-    background-color: var(--bg-200);
+    background-color: #2b2b2b;
     border-radius: 16px;
     flex-direction: row;
     align-items: center;
@@ -130,25 +113,24 @@
 
 .card-value {
     font-size: 36px;
-    color: var(--primary-100);
+    color: #00D2BE;
     font-weight: bold;
 }
 
 .card-unit {
     font-size: 20px;
-    color: var(--text-200);
+    color: #e0e0e0;
     margin-left: 4px;
 }
 
 .card-label {
     font-size: 20px;
-    color: var(--text-200);
+    color: #e0e0e0;
     position: absolute;
     right: 15px;
     bottom: 12px;
 }
 
-/* 亮度调节区 */
 .brightness-section {
     width: 100%;
     padding-left: 30px;
@@ -165,13 +147,13 @@
 
 .section-title {
     font-size: 28px;
-    color: var(--text-100);
+    color: #FFFFFF;
     font-weight: bold;
 }
 
 .brightness-value {
     font-size: 28px;
-    color: var(--accent-100);
+    color: #FFD700;
     font-weight: bold;
 }
 
@@ -185,13 +167,12 @@
 .brightness-slider {
     width: 100%;
     height: 6px;
-    color: var(--primary-100);
-    background-color: var(--bg-300);
-    selected-color: var(--primary-100);
-    block-color: var(--accent-100);
+    color: #00D2BE;
+    background-color: #434343;
+    selected-color: #00D2BE;
+    block-color: #FFD700;
 }
 
-/* 场景模式区 */
 .scene-section {
     width: 100%;
     padding-left: 30px;
@@ -209,7 +190,7 @@
 .scene-btn {
     width: 22%;
     height: 90px;
-    background-color: var(--bg-200);
+    background-color: #2b2b2b;
     border-radius: 12px;
     flex-direction: column;
     align-items: center;
@@ -217,8 +198,9 @@
 }
 
 .scene-active {
-    background-color: var(--primary-300);
-    border: 2px solid var(--primary-100);
+    background-color: #007061;
+    border-width: 2px;
+    border-color: #00D2BE;
 }
 
 .scene-icon {
@@ -227,17 +209,16 @@
 
 .scene-name {
     font-size: 20px;
-    color: var(--text-200);
+    color: #e0e0e0;
     margin-top: 4px;
 }
 
 .scene-value {
     font-size: 18px;
-    color: var(--primary-100);
+    color: #00D2BE;
     margin-top: 2px;
 }
 
-/* 定时器区 */
 .timer-section {
     width: 100%;
     padding-left: 30px;
@@ -248,7 +229,7 @@
 
 .timer-status {
     font-size: 24px;
-    color: var(--accent-100);
+    color: #FFD700;
 }
 
 .timer-grid {
@@ -260,7 +241,7 @@
 .timer-btn {
     width: 22%;
     height: 70px;
-    background-color: var(--bg-200);
+    background-color: #2b2b2b;
     border-radius: 12px;
     flex-direction: column;
     align-items: center;
@@ -268,23 +249,23 @@
 }
 
 .timer-active {
-    background-color: var(--accent-200);
-    border: 2px solid var(--accent-100);
+    background-color: #917800;
+    border-width: 2px;
+    border-color: #FFD700;
 }
 
 .timer-value {
     font-size: 28px;
-    color: var(--text-100);
+    color: #FFFFFF;
     font-weight: bold;
 }
 
 .timer-unit {
     font-size: 18px;
-    color: var(--text-200);
+    color: #e0e0e0;
     margin-top: 2px;
 }
 
-/* 底部开关按钮 */
 .bottom-bar {
     width: 100%;
     height: 120px;
@@ -293,7 +274,7 @@
     position: fixed;
     bottom: 0;
     left: 0;
-    background-color: var(--bg-200);
+    background-color: #2b2b2b;
 }
 
 .power-btn {
@@ -302,20 +283,20 @@
     border-radius: 40px;
     justify-content: center;
     align-items: center;
-    border: 3px solid var(--text-200);
+    border-width: 3px;
+    border-color: #e0e0e0;
 }
 
 .power-on {
-    background-color: var(--primary-100);
-    border-color: var(--primary-100);
-    box-shadow: 0 0 20px var(--primary-100);
+    background-color: #00D2BE;
+    border-color: #00D2BE;
 }
 
 .power-off {
-    background-color: var(--bg-300);
+    background-color: #434343;
 }
 
 .power-icon {
     font-size: 36px;
-    color: var(--text-100);
+    color: #FFFFFF;
 }
