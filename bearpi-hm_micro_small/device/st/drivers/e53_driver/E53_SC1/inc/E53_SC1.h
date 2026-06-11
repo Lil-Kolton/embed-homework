@@ -35,6 +35,14 @@
 #define WIFI_IOT_I2C_IDX_1 1
 #define WIFI_IOT_I2C_BAUDRATE 400000
 
+/* 智慧台灯新增定义 */
+#define E53_SC1_BUTTON_GPIO     E53_IO_6    /* 按键引脚 */
+#define E53_SC1_PWM_NUM         0           /* PWM 设备号 */
+#define E53_SC1_PWM_PERIOD      1000000     /* PWM 周期 1ms (ns) */
+#define E53_SC1_PWM_MAX_DUTY    1000000     /* 最大占空比 */
+#define E53_SC1_BRIGHTNESS_MAX  100
+#define E53_SC1_BRIGHTNESS_MIN  0
+
 typedef enum {
     OFF = 0,
     ON
@@ -44,6 +52,10 @@ int E53_SC1Init(void);
 int E53_SC1DeInit(void);
 int E53_SC1ReadData(float *data);
 void E53_SC1LightStatusSet(E53SC1Status status);
+/* 智慧台灯新增函数 */
+int E53_SC1SetBrightness(uint8_t brightness);
+uint8_t E53_SC1GetBrightness(void);
+int E53_SC1ButtonInit(void);
 
 
 #endif /* __E53_SC1_H__ */

@@ -36,6 +36,7 @@ typedef enum {
     E53_SC1_Stop,
     E53_SC1_Read,
     E53_SC1_SetLight,
+    E53_SC1_SetBrightness,  /* 智慧台灯：新增亮度设置命令 */
 }E53_SC1Ctrl;
 
 int32_t E53_SC1_DriverDispatch(struct HdfDeviceIoClient *client, int cmdCode, struct HdfSBuf *data, struct HdfSBuf *reply)
@@ -80,9 +81,10 @@ int32_t E53_SC1_DriverDispatch(struct HdfDeviceIoClient *client, int cmdCode, st
                 HDF_LOGE("E53 SC1 Read Data err");
                 return HDF_FAILURE;
             }
-            replay_buf = OsalMemAlloc(100);
-            (void)memset_s(replay_buf, 100, 0, 100);
-            sprintf(replay_buf, "{\"Lux\":%.2f,\"LED\":\"%s\"}", lux_data, LightStatus ? "ON" : "OFF");
+            replay_buf = OsalMemAlloc(150);
+            (void)memset_s(replay_buf, 150, 0, 150);
+            sprintf(replay_buf, "{\"Lux\":%.2f,\"LED\":\"%s\",\"Brightness\":%d}",
+                    lux_data, LightStatus ? "ON" : "OFF", E53_SC1GetBrightness());
             /* 把传感器数据写入reply, 可被带至用户程序 */
             if (!HdfSbufWriteString(reply, replay_buf)) {
                 HDF_LOGE("replay is fail");
@@ -102,10 +104,36 @@ int32_t E53_SC1_DriverDispatch(struct HdfDeviceIoClient *client, int cmdCode, st
                 HDF_LOGE("Command wrong!");
                 return HDF_FAILURE;
             }
-            replay_buf = OsalMemAlloc(100);
-            (void)memset_s(replay_buf, 100, 0, 100);
-            sprintf(replay_buf, "{\"Lux\":%.2f,\"LED\":\"%s\"}", lux_data, LightStatus ? "ON" : "OFF");
+            replay_buf = OsalMemAlloc(150);
+            (void)memset_s(replay_buf, 150, 0, 150);
+            sprintf(replay_buf, "{\"Lux\":%.2f,\"LED\":\"%s\",\"Brightness\":%d}",
+                    lux_data, LightStatus ? "ON" : "OFF", E53_SC1GetBrightness());
             /* 把传感器数据写入reply, 可被带至用户程序 */
+            if (!HdfSbufWriteString(reply, replay_buf)) {
+                HDF_LOGE("replay is fail");
+                return HDF_FAILURE;
+            }
+            OsalMemFree(replay_buf);
+            break;
+        /* 智慧台灯：新增亮度设置命令 */
+        case E53_SC1_SetBrightness:
+            const char* brightnessStr = HdfSbufReadString(data);
+            if (brightnessStr == NULL) {
+                HDF_LOGE("Brightness data is NULL");
+                return HDF_FAILURE;
+            }
+            int brightnessVal = atoi(brightnessStr);
+            if (brightnessVal < 0 || brightnessVal > 100) {
+                HDF_LOGE("Brightness value out of range: %d", brightnessVal);
+                return HDF_FAILURE;
+            }
+            E53_SC1SetBrightness((uint8_t)brightnessVal);
+            LightStatus = (brightnessVal > 0) ? 1 : 0;
+            printf("[E53_SC1] Set Brightness to %d%%\r\n", brightnessVal);
+            replay_buf = OsalMemAlloc(150);
+            (void)memset_s(replay_buf, 150, 0, 150);
+            sprintf(replay_buf, "{\"Lux\":%.2f,\"LED\":\"%s\",\"Brightness\":%d}",
+                    lux_data, LightStatus ? "ON" : "OFF", E53_SC1GetBrightness());
             if (!HdfSbufWriteString(reply, replay_buf)) {
                 HDF_LOGE("replay is fail");
                 return HDF_FAILURE;
