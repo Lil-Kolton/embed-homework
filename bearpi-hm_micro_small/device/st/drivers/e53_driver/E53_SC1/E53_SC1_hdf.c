@@ -1,16 +1,8 @@
 /*
  * Copyright (c) 2022 Nanjing Xiaoxiongpai Intelligent Technology Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * HDF 驱动层 - 修复版本
+ * Kolton 2026-06-11
  */
 
 #include <stdint.h>
@@ -36,7 +28,7 @@ typedef enum {
     E53_SC1_Stop,
     E53_SC1_Read,
     E53_SC1_SetLight,
-    E53_SC1_SetBrightness,  /* 智慧台灯：新增亮度设置命令 */
+    E53_SC1_SetBrightness,
 }E53_SC1Ctrl;
 
 int32_t E53_SC1_DriverDispatch(struct HdfDeviceIoClient *client, int cmdCode, struct HdfSBuf *data, struct HdfSBuf *reply)
@@ -74,7 +66,6 @@ int32_t E53_SC1_DriverDispatch(struct HdfDeviceIoClient *client, int cmdCode, st
                 return HDF_FAILURE;
             }
             break;
-        /* 接收到用户态发来的LED_WRITE_READ命令 */
         case E53_SC1_Read:
             ret = E53_SC1ReadData(&lux_data);
             if (ret != 0) {
@@ -83,9 +74,8 @@ int32_t E53_SC1_DriverDispatch(struct HdfDeviceIoClient *client, int cmdCode, st
             }
             replay_buf = OsalMemAlloc(150);
             (void)memset_s(replay_buf, 150, 0, 150);
-            sprintf(replay_buf, "{\"Lux\":%.2f,\"LED\":\"%s\",\"Brightness\":%d}",
+            sprintf(replay_buf, "{\"Lux\":%.2f,\"LED\":\"%s\",\"Brightness\":%d}", 
                     lux_data, LightStatus ? "ON" : "OFF", E53_SC1GetBrightness());
-            /* 把传感器数据写入reply, 可被带至用户程序 */
             if (!HdfSbufWriteString(reply, replay_buf)) {
                 HDF_LOGE("replay is fail");
                 return HDF_FAILURE;
@@ -106,16 +96,14 @@ int32_t E53_SC1_DriverDispatch(struct HdfDeviceIoClient *client, int cmdCode, st
             }
             replay_buf = OsalMemAlloc(150);
             (void)memset_s(replay_buf, 150, 0, 150);
-            sprintf(replay_buf, "{\"Lux\":%.2f,\"LED\":\"%s\",\"Brightness\":%d}",
+            sprintf(replay_buf, "{\"Lux\":%.2f,\"LED\":\"%s\",\"Brightness\":%d}", 
                     lux_data, LightStatus ? "ON" : "OFF", E53_SC1GetBrightness());
-            /* 把传感器数据写入reply, 可被带至用户程序 */
             if (!HdfSbufWriteString(reply, replay_buf)) {
                 HDF_LOGE("replay is fail");
                 return HDF_FAILURE;
             }
             OsalMemFree(replay_buf);
             break;
-        /* 智慧台灯：新增亮度设置命令 */
         case E53_SC1_SetBrightness:
             const char* brightnessStr = HdfSbufReadString(data);
             if (brightnessStr == NULL) {
@@ -129,10 +117,9 @@ int32_t E53_SC1_DriverDispatch(struct HdfDeviceIoClient *client, int cmdCode, st
             }
             E53_SC1SetBrightness((uint8_t)brightnessVal);
             LightStatus = (brightnessVal > 0) ? 1 : 0;
-            printf("[E53_SC1] Set Brightness to %d%%\r\n", brightnessVal);
             replay_buf = OsalMemAlloc(150);
             (void)memset_s(replay_buf, 150, 0, 150);
-            sprintf(replay_buf, "{\"Lux\":%.2f,\"LED\":\"%s\",\"Brightness\":%d}",
+            sprintf(replay_buf, "{\"Lux\":%.2f,\"LED\":\"%s\",\"Brightness\":%d}", 
                     lux_data, LightStatus ? "ON" : "OFF", E53_SC1GetBrightness());
             if (!HdfSbufWriteString(reply, replay_buf)) {
                 HDF_LOGE("replay is fail");
@@ -148,7 +135,6 @@ int32_t E53_SC1_DriverDispatch(struct HdfDeviceIoClient *client, int cmdCode, st
 }
 
 
-//驱动对外提供的服务能力，将相关的服务接口绑定到HDF框架
 static int32_t Hdf_E53_SC1_DriverBind(struct HdfDeviceObject *deviceObject)
 {
     if (deviceObject == NULL) {
@@ -163,21 +149,11 @@ static int32_t Hdf_E53_SC1_DriverBind(struct HdfDeviceObject *deviceObject)
     return HDF_SUCCESS;
 }
 
-// static struct E53_SC1Hooks hooks = {
-//     .E53_SC1Init = sc1Init,
-//     .E53_SC1DeInit = sc1DeInit,
-//     .E53_SC1LightGpioSet = sc1GpioSet,
-//     .E53_SC1_IICWriteFunc = sc1E53_IICWrite,
-//     .E53_SC1_IICReadFunc = sc1E53_IICRead,
-//     .E53_SC1_IICWriteReadFunc = sc1E53_IICWriteRead,
-// };
-
 static int32_t Hdf_E53_SC1_DriverInit(struct HdfDeviceObject *device)
 {
     return HDF_SUCCESS;
 }
 
-// 驱动资源释放的接口
 void Hdf_E53_SC1_DriverRelease(struct HdfDeviceObject *deviceObject)
 {
     if (deviceObject == NULL) {
@@ -188,8 +164,6 @@ void Hdf_E53_SC1_DriverRelease(struct HdfDeviceObject *deviceObject)
     return;
 }
 
-
-// 定义驱动入口的对象，必须为HdfDriverEntry（在hdf_device_desc.h中定义）类型的全局变量
 static struct HdfDriverEntry g_E53DriverEntry = {
     .moduleVersion = 1,
     .moduleName = "HDF_E53_SC1",
@@ -198,6 +172,4 @@ static struct HdfDriverEntry g_E53DriverEntry = {
     .Release = Hdf_E53_SC1_DriverRelease,
 };
 
-// 调用HDF_INIT将驱动入口注册到HDF框架中
 HDF_INIT(g_E53DriverEntry);
-
