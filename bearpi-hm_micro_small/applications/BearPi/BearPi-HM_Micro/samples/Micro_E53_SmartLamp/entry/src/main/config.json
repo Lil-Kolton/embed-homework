@@ -24,8 +24,8 @@
     "abilities": [
       {
         "name": "default",
-        "icon": ":icon_small",
-        "label": ":entry_MainAbility",
+        "icon": "$media:icon_small",
+        "label": "$string:entry_MainAbility",
         "type": "page"
       }
     ],
