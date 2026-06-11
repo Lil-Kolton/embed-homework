@@ -1,0 +1,60 @@
+<!--
+ * Copyright (c) 2022 Nanjing Xiaoxiongpai Intelligent Technology Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ -->
+<div class="container">
+    <div class="back">
+        <div class="back-img-view" onclick="exit">
+            <image class="back-img" src="../../common/ic_back.png"/>
+        </div>
+    </div>
+    <div class="e53">
+        <div class="e53-title">
+            <text class="text e53-title-text">我的模块</text>
+        </div>
+        <div class="e53-group1">
+            <div class="e53-case" onclick="route({{e53.e53_nong}})">
+                <image class="e53-case-img" src="../../common/case_nong.png"/>
+                <text class="text e53-case-state" >
+                    {{e53.e53_nong.state}}
+                </text>
+            </div>
+            <div class="e53-case" onclick="route({{e53.e53_deng}})">
+                <image class="e53-case-img" src="../../common/case_deng.png"/>
+                <text class="text e53-case-state" >
+                    {{e53.e53_deng.state}}
+                </text>
+            </div>
+            <div class="e53-case" onclick="route({{e53.e53_yan}})">
+                <image class="e53-case-img" src="../../common/case_yan.png"/>
+                <text class="text e53-case-state" >
+                    {{e53.e53_yan.state}}
+                </text>
+            </div>
+        </div>
+        <div class="e53-group2">
+            <div class="e53-case" onclick="route({{e53.e53_jing}})">
+                <image class="e53-case-img" src="../../common/case_jing.png"/>
+                <text class="text e53-case-state" >
+                    {{e53.e53_jing.state}}
+                </text>
+            </div>
+            <div class="e53-case" onclick="route({{e53.e53_hong}})">
+                <image class="e53-case-img" src="../../common/case_hong.png"/>
+                <text class="text e53-case-state" >
+                    {{e53.e53_hong.state}}
+                </text>
+            </div>
+        </div>
+    </div>
+</div>

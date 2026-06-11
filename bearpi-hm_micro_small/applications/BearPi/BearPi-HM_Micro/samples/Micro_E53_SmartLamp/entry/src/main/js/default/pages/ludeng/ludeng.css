@@ -1,0 +1,321 @@
+/*
+ * 智慧台灯 HAP 应用样式 - Kolton 2026-06-11
+ * 配色方案：深色主题 + 青绿色主色 + 金色强调
+ */
+
+/* 全局变量 */
+.container {
+    --primary-100: #00D2BE;
+    --primary-200: #00b4a1;
+    --primary-300: #007061;
+    --accent-100: #FFD700;
+    --accent-200: #917800;
+    --text-100: #FFFFFF;
+    --text-200: #e0e0e0;
+    --bg-100: #1C1C1C;
+    --bg-200: #2b2b2b;
+    --bg-300: #434343;
+
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    background-color: var(--bg-100);
+}
+
+/* 顶部导航栏 */
+.header {
+    width: 100%;
+    height: 80px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding-left: 20px;
+    padding-right: 20px;
+    background-color: var(--bg-200);
+}
+
+.back-btn {
+    width: 60px;
+    height: 60px;
+    justify-content: center;
+    align-items: center;
+}
+
+.back-img {
+    width: 36px;
+    height: 36px;
+}
+
+.title {
+    font-size: 34px;
+    color: var(--text-100);
+    font-weight: bold;
+}
+
+.placeholder {
+    width: 60px;
+    height: 60px;
+}
+
+/* 灯光主显示区 */
+.lamp-section {
+    width: 100%;
+    height: 200px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.lamp-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 60px;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s;
+}
+
+.lamp-on {
+    background-color: var(--accent-100);
+    box-shadow: 0 0 30px var(--accent-100);
+}
+
+.lamp-off {
+    background-color: var(--bg-300);
+}
+
+.lamp-icon {
+    width: 60px;
+    height: 60px;
+}
+
+.status-text {
+    font-size: 28px;
+    color: var(--text-200);
+    margin-top: 15px;
+}
+
+/* 数据卡片区 */
+.data-cards {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-left: 30px;
+    padding-right: 30px;
+    margin-top: 20px;
+}
+
+.card {
+    width: 45%;
+    height: 100px;
+    background-color: var(--bg-200);
+    border-radius: 16px;
+    flex-direction: row;
+    align-items: center;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.card-icon {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+}
+
+.card-info {
+    flex-direction: row;
+    align-items: baseline;
+}
+
+.card-value {
+    font-size: 36px;
+    color: var(--primary-100);
+    font-weight: bold;
+}
+
+.card-unit {
+    font-size: 20px;
+    color: var(--text-200);
+    margin-left: 4px;
+}
+
+.card-label {
+    font-size: 20px;
+    color: var(--text-200);
+    position: absolute;
+    right: 15px;
+    bottom: 12px;
+}
+
+/* 亮度调节区 */
+.brightness-section {
+    width: 100%;
+    padding-left: 30px;
+    padding-right: 30px;
+    margin-top: 25px;
+}
+
+.section-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.section-title {
+    font-size: 28px;
+    color: var(--text-100);
+    font-weight: bold;
+}
+
+.brightness-value {
+    font-size: 28px;
+    color: var(--accent-100);
+    font-weight: bold;
+}
+
+.slider-container {
+    width: 100%;
+    height: 50px;
+    justify-content: center;
+    align-items: center;
+}
+
+.brightness-slider {
+    width: 100%;
+    height: 6px;
+    color: var(--primary-100);
+    background-color: var(--bg-300);
+    selected-color: var(--primary-100);
+    block-color: var(--accent-100);
+}
+
+/* 场景模式区 */
+.scene-section {
+    width: 100%;
+    padding-left: 30px;
+    padding-right: 30px;
+    margin-top: 25px;
+    flex-direction: column;
+}
+
+.scene-grid {
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 12px;
+}
+
+.scene-btn {
+    width: 22%;
+    height: 90px;
+    background-color: var(--bg-200);
+    border-radius: 12px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.scene-active {
+    background-color: var(--primary-300);
+    border: 2px solid var(--primary-100);
+}
+
+.scene-icon {
+    font-size: 28px;
+}
+
+.scene-name {
+    font-size: 20px;
+    color: var(--text-200);
+    margin-top: 4px;
+}
+
+.scene-value {
+    font-size: 18px;
+    color: var(--primary-100);
+    margin-top: 2px;
+}
+
+/* 定时器区 */
+.timer-section {
+    width: 100%;
+    padding-left: 30px;
+    padding-right: 30px;
+    margin-top: 25px;
+    flex-direction: column;
+}
+
+.timer-status {
+    font-size: 24px;
+    color: var(--accent-100);
+}
+
+.timer-grid {
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 12px;
+}
+
+.timer-btn {
+    width: 22%;
+    height: 70px;
+    background-color: var(--bg-200);
+    border-radius: 12px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.timer-active {
+    background-color: var(--accent-200);
+    border: 2px solid var(--accent-100);
+}
+
+.timer-value {
+    font-size: 28px;
+    color: var(--text-100);
+    font-weight: bold;
+}
+
+.timer-unit {
+    font-size: 18px;
+    color: var(--text-200);
+    margin-top: 2px;
+}
+
+/* 底部开关按钮 */
+.bottom-bar {
+    width: 100%;
+    height: 120px;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    background-color: var(--bg-200);
+}
+
+.power-btn {
+    width: 80px;
+    height: 80px;
+    border-radius: 40px;
+    justify-content: center;
+    align-items: center;
+    border: 3px solid var(--text-200);
+}
+
+.power-on {
+    background-color: var(--primary-100);
+    border-color: var(--primary-100);
+    box-shadow: 0 0 20px var(--primary-100);
+}
+
+.power-off {
+    background-color: var(--bg-300);
+}
+
+.power-icon {
+    font-size: 36px;
+    color: var(--text-100);
+}

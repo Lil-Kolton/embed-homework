@@ -1,0 +1,114 @@
+<!--
+ * Copyright (c) 2022 Nanjing Xiaoxiongpai Intelligent Technology Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * 智慧台灯 HAP 应用 - Kolton 2026-06-11
+ -->
+<div class="container">
+    <!-- 顶部导航栏 -->
+    <div class="header">
+        <div class="back-btn" onclick="toback">
+            <image class="back-img" src="../../common/ic_back.png"/>
+        </div>
+        <text class="title">智慧台灯</text>
+        <div class="placeholder"></div>
+    </div>
+
+    <!-- 灯光主显示区 -->
+    <div class="lamp-section">
+        <div class="lamp-circle {{ mydata.LED == 'ON' ? 'lamp-on' : 'lamp-off' }}">
+            <image class="lamp-icon" src="../../common/deng.png"/>
+        </div>
+        <text class="status-text">{{ mydata.LED == 'ON' ? '已开启' : '已关闭' }}</text>
+    </div>
+
+    <!-- 数据卡片区 -->
+    <div class="data-cards">
+        <div class="card">
+            <image class="card-icon" src="../../common/airLux.png"/>
+            <div class="card-info">
+                <text class="card-value">{{ mydata.Lux }}</text>
+                <text class="card-unit">Lux</text>
+            </div>
+            <text class="card-label">环境光照</text>
+        </div>
+        <div class="card">
+            <image class="card-icon" src="../../common/deng.png"/>
+            <div class="card-info">
+                <text class="card-value">{{ mydata.Brightness }}</text>
+                <text class="card-unit">%</text>
+            </div>
+            <text class="card-label">当前亮度</text>
+        </div>
+    </div>
+
+    <!-- 亮度调节区 -->
+    <div class="brightness-section">
+        <div class="section-header">
+            <text class="section-title">亮度调节</text>
+            <text class="brightness-value">{{ mydata.Brightness }}%</text>
+        </div>
+        <div class="slider-container">
+            <slider class="brightness-slider" min="0" max="100" value="{{ mydata.Brightness }}" onchange="onBrightnessChange"></slider>
+        </div>
+    </div>
+
+    <!-- 场景模式区 -->
+    <div class="scene-section">
+        <text class="section-title">场景模式</text>
+        <div class="scene-grid">
+            <div class="scene-btn {{ currentScene == 'read' ? 'scene-active' : '' }}" onclick="setScene('read')">
+                <text class="scene-icon">📖</text>
+                <text class="scene-name">阅读</text>
+                <text class="scene-value">100%</text>
+            </div>
+            <div class="scene-btn {{ currentScene == 'relax' ? 'scene-active' : '' }}" onclick="setScene('relax')">
+                <text class="scene-icon">☕</text>
+                <text class="scene-name">休闲</text>
+                <text class="scene-value">60%</text>
+            </div>
+            <div class="scene-btn {{ currentScene == 'night' ? 'scene-active' : '' }}" onclick="setScene('night')">
+                <text class="scene-icon">🌙</text>
+                <text class="scene-name">夜灯</text>
+                <text class="scene-value">10%</text>
+            </div>
+            <div class="scene-btn {{ currentScene == 'custom' ? 'scene-active' : '' }}" onclick="setScene('custom')">
+                <text class="scene-icon">⚙️</text>
+                <text class="scene-name">自定义</text>
+                <text class="scene-value">{{ customBrightness }}%</text>
+            </div>
+        </div>
+    </div>
+
+    <!-- 定时器区 -->
+    <div class="timer-section">
+        <div class="section-header">
+            <text class="section-title">定时关灯</text>
+            <text class="timer-status" if="{{ timerRemaining > 0 }}">{{ timerDisplay }}</text>
+        </div>
+        <div class="timer-grid">
+            <div class="timer-btn {{ selectedTimer == 10 ? 'timer-active' : '' }}" onclick="setTimer(10)">
+                <text class="timer-value">10</text>
+                <text class="timer-unit">分钟</text>
+            </div>
+            <div class="timer-btn {{ selectedTimer == 30 ? 'timer-active' : '' }}" onclick="setTimer(30)">
+                <text class="timer-value">30</text>
+                <text class="timer-unit">分钟</text>
+            </div>
+            <div class="timer-btn {{ selectedTimer == 60 ? 'timer-active' : '' }}" onclick="setTimer(60)">
+                <text class="timer-value">60</text>
+                <text class="timer-unit">分钟</text>
+            </div>
+            <div class="timer-btn {{ selectedTimer == 0 ? 'timer-active' : '' }}" onclick="cancelTimer()" if="{{ timerRemaining > 0 }}">
+                <text class="timer-value">取消</text>
+                <text class="timer-unit">定时</text>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部开关按钮 -->
+    <div class="bottom-bar">
+        <div class="power-btn {{ mydata.LED == 'ON' ? 'power-on' : 'power-off' }}" onclick="toggleLight">
+            <text class="power-icon">⏻</text>
+        </div>
+    </div>
+</div>

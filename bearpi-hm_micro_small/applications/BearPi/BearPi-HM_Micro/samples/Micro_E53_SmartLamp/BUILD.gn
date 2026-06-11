@@ -1,0 +1,16 @@
+# Copyright (c) 2022 Nanjing Xiaoxiongpai Intelligent Technology Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# 智慧台灯 HAP 应用 - Kolton 2026-06-11
+
+import("//build/lite/config/hap_pack.gni")
+
+hap_pack("Micro_E53_SmartLamp_hap") {
+  mode = "hap"
+  json_path = "entry/src/main/config.json"
+  assets_path = "entry/src/main/js"
+  resources_path = "entry/src/main/resources"
+  force = "true"
+  hap_name = "Micro_E53_SmartLamp"
+  cert_profile = "cert/com.huawei.launcher_HarmonyAppProvision_release.p7b"
+  privatekey = "HOS Application Provision Release"
+}

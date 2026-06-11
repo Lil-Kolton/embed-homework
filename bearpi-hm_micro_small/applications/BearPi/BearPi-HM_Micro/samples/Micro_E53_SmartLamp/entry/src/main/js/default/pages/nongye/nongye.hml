@@ -1,0 +1,64 @@
+<!--
+ * Copyright (c) 2022 Nanjing Xiaoxiongpai Intelligent Technology Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ -->
+<div class="container">
+    <div class="back">
+        <div class="back-img-view" onclick="toback">
+            <image class="back-img" src="../../common/ic_back.png"/>
+        </div>
+    </div>
+    <div class="e53-title">
+        <text class="text e53-title-text">{{ title }}</text>
+    </div>
+    <div class="control-board">
+        <div class="data-view">
+            <div class="data-group">
+                <div class="data-cap">
+                    <image class="data-ico" src="../../common/airTemp.png"/>
+                    <text class="text data-describe">温度：{{mydata.Temp}}℃</text>
+                </div>
+                <div class="data-cap">
+                    <image class="data-ico" src="../../common/airHumidity.png"/>
+                    <text class="text data-describe">湿度：{{mydata.Hum}}%</text>
+                </div>
+                <div class="data-cap">
+                    <image class="data-ico" src="../../common/airLux.png"/>
+                    <text class="text data-describe">光照强度：{{mydata.Lux}}lx</text>
+                </div>
+            </div>
+        </div>
+        <div class="control-view">
+            <div class="control-group">
+                <div class="group">
+                    <text class="text control-describe">led灯</text>
+                    <div class="control-ico-group">
+                        <image class="control-ico-left" if="{{mydata.LED == 'OFF'}}" src="../../common/led_off.png"/>
+                        <image class="control-ico-left" if="{{mydata.LED == 'ON'}}" src="../../common/led_on.png"/>
+                        <image class="control-ico-right" if="{{mydata.LED == 'OFF'}}" onclick="dengChange" src="../../common/off.png"/>
+                        <image class="control-ico-right" if="{{mydata.LED == 'ON'}}" onclick="dengChange" src="../../common/on.png"/>
+                    </div>
+                </div>
+                <div class="group">
+                    <text class="text control-describe">风扇</text>
+                    <div class="control-ico-group">
+                        <image class="control-ico-left" if="{{mydata.Motor == 'OFF'}}" src="../../common/dian_off.png"/>
+                        <image class="control-ico-left" if="{{mydata.Motor == 'ON'}}" src="../../common/dian_on.png"/>
+                        <image class="control-ico-right" if="{{mydata.Motor == 'OFF'}}" onclick="dianChange" src="../../common/off.png"/>
+                        <image class="control-ico-right" if="{{mydata.Motor == 'ON'}}" onclick="dianChange" src="../../common/on.png"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
