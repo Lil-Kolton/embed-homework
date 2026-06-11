@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git init *)",
+      "Bash(git remote *)",
+      "Bash(git add *)",
+      "Bash(git rm *)",
+      "Bash(git config *)",
+      "Bash(rm -rf bearpi-hm_micro_small/.git)",
+      "Bash(echo \"bearpi-hm_micro_small/.git\")",
+      "Bash(git commit *)"
+    ]
+  }
+}
