@@ -54,8 +54,6 @@ static void E53_SC1ButtonToggleLight(void)
     } else {
         E53_SC1LightStatusSet(ON);
     }
-    printf("[E53_SC1] Button click: LED=%s, Brightness=%d%%\r\n",
-        g_lightStatus ? "ON" : "OFF", g_brightness);
 }
 
 /* direction 为正表示调亮，为负表示调暗 */
@@ -78,8 +76,6 @@ static void E53_SC1ButtonAdjustBrightness(int direction)
         brightness = E53_SC1_BRIGHTNESS_DIM_MIN;
     }
     E53_SC1SetBrightness((uint8_t)brightness);
-    printf("[E53_SC1] Button long %s, Brightness=%d%%\r\n",
-        direction > 0 ? "brighten" : "dim", g_brightness);
 }
 
 /* 使用轮询方式读取 USER_KEY1/S2，避免依赖当前 GPIO IRQ 回调实现 */
@@ -296,12 +292,10 @@ void E53_SC1LightStatusSet(E53SC1Status status)
             g_brightness = g_lastBrightness;
         }
         E53_SC1SetBrightness(g_brightness);
-        printf("[E53_SC1] Light ON, Brightness=%d%%\r\n", g_brightness);
     }
     if (status == OFF) {
         g_lightStatus = 0;
         E53_SC1SetBrightness(0);
-        printf("[E53_SC1] Light OFF\r\n");
     }
 }
 
@@ -326,7 +320,7 @@ int E53_SC1SetBrightness(uint8_t brightness)
     } else {
         g_lightStatus = 0;
     }
-    printf("[E53_SC1] Brightness set to %d%%\r\n", brightness);
+    dprintf("Brightness: %d%%\r\n", brightness);
     return 0;
 }
 

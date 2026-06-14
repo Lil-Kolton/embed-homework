@@ -89,7 +89,6 @@ E53_Status E53_PWMSetPeriod(uint32_t period)
         E53_Log("Pwm set period failed!");
         return E53_Failed;
     }
-    E53_Log("here");
     return E53_Ok;
 }
 
@@ -105,7 +104,6 @@ E53_Status E53_PWMSetDuty(uint32_t duty)
         E53_Log("Pwm set duty failed!");
         return E53_Failed;
     }
-    E53_Log("here");
     return E53_Ok;
 }
 
