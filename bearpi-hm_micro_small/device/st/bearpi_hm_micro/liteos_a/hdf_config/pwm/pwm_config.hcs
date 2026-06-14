@@ -23,13 +23,12 @@ root {
             device_pwm3 :: pwm_device {
                 tim_addr = 0x40001000;
                 tim_clk_hz = 10000000;  //10KHZ
-                channel = 1;    //channel_1 
+                channel = 4;    //TIM3_CH4
                 num = 3;
-                gpio_port_addr = 0x50002000;    //GPIOA
-                pin_number = 6;    //PA6
+                gpio_port_addr = 0x50003000;    //GPIOB
+                pin_number = 1;    //PB1 / E53_IO_5
                 match_attr = "st_stm32mp157_pwm_3";            
             }
         }
     }
 }
-

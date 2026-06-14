@@ -1,8 +1,8 @@
 /*
  * Copyright (c) 2022 Nanjing Xiaoxiongpai Intelligent Technology Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
- * 修复版本：禁用 PWM 和按键中断，恢复简单 GPIO 控制
- * Kolton 2026-06-11
+ * 智慧台灯驱动：HDF PWM 调光
+ * Kolton 2026-06-14
  */
 
 #include <math.h>
@@ -14,11 +14,27 @@
 #include "E53_Common.h"
 #include "osal_time.h"
 
-#define E53_SC1_Light_GPIO  E53_IO_5
-
 /* 全局变量 */
 static uint8_t g_brightness = 0;
 static uint8_t g_lightStatus = 0;
+static uint8_t g_pwmReady = 0;
+
+static int E53_SC1PwmInit(void)
+{
+    int ret;
+
+    ret = E53_PWMOpen(E53_SC1_PWM_NUM);
+    if (ret != 0) {
+        printf("[E53_SC1] PWM%d open failed\r\n", E53_SC1_PWM_NUM);
+        return -1;
+    }
+
+    E53_PWMSet(E53_SC1_PWM_PERIOD, 1);
+    E53_PWMStart();
+    g_pwmReady = 1;
+    printf("[E53_SC1] use PWM%d TIM3_CH4 PB1 period=%d\r\n", E53_SC1_PWM_NUM, E53_SC1_PWM_PERIOD);
+    return 0;
+}
 
 /* BH1750 相关函数 */
 static int InitBH1750(void)
@@ -43,12 +59,11 @@ static int StartBH1750(void)
     return 0;
 }
 
-/* 初始化 - 暂时不启用 PWM 和按键 */
+/* 初始化 */
 int E53_SC1Init(void)
 {
     int ret;
 
-    E53_GPIOInit(E53_SC1_Light_GPIO, E53_GPIO_Out_PullNone);
     E53_IICOpen();
 
     ret = InitBH1750();
@@ -56,21 +71,27 @@ int E53_SC1Init(void)
         return -1;
     }
 
+    E53_SC1PwmInit();
+
     g_lightStatus = 0;
     g_brightness = 0;
-    printf("[E53_SC1] initialized (GPIO mode)\r\n");
+    printf("[E53_SC1] Smart Light initialized\r\n");
     return 0;
 }
 
 /* 反初始化 */
 int E53_SC1DeInit(void)
 {
-    E53_GPIODeinit(E53_SC1_Light_GPIO);
+    if (g_pwmReady) {
+        E53_PWMStop();
+        E53_PWMClose();
+        g_pwmReady = 0;
+    }
     E53_IICClose();
     
     g_lightStatus = 0;
     g_brightness = 0;
-    printf("[E53_SC1] deinitialized\r\n");
+    printf("[E53_SC1] Smart Light deinitialized\r\n");
     return 0;
 }
 
@@ -91,32 +112,40 @@ int E53_SC1ReadData(float *data)
     return 0;
 }
 
-/* 灯光控制 - 简单 GPIO 开关 */
+/* 灯光控制 */
 void E53_SC1LightStatusSet(E53SC1Status status)
 {
     if (status == ON) {
-        E53_GPIOWrite(E53_SC1_Light_GPIO, 1);
         g_lightStatus = 1;
-        g_brightness = 100;
-        printf("[E53_SC1] Light ON\r\n");
+        if (g_brightness == 0) {
+            g_brightness = 80;
+        }
+        E53_SC1SetBrightness(g_brightness);
+        printf("[E53_SC1] Light ON, Brightness=%d%%\r\n", g_brightness);
     }
     if (status == OFF) {
-        E53_GPIOWrite(E53_SC1_Light_GPIO, 0);
         g_lightStatus = 0;
-        g_brightness = 0;
+        E53_SC1SetBrightness(0);
         printf("[E53_SC1] Light OFF\r\n");
     }
 }
 
-/* 设置亮度 - 暂时只支持开/关 */
+/* 设置亮度 - GPIO 软件 PWM */
 int E53_SC1SetBrightness(uint8_t brightness)
 {
+    if (brightness > E53_SC1_BRIGHTNESS_MAX) {
+        brightness = E53_SC1_BRIGHTNESS_MAX;
+    }
+
     g_brightness = brightness;
+    if (g_pwmReady) {
+        unsigned int duty = (brightness == 0) ? 1 : (E53_SC1_PWM_PERIOD * brightness / E53_SC1_BRIGHTNESS_MAX);
+        E53_PWMSetDuty(duty);
+    }
+
     if (brightness > 0) {
-        E53_GPIOWrite(E53_SC1_Light_GPIO, 1);
         g_lightStatus = 1;
     } else {
-        E53_GPIOWrite(E53_SC1_Light_GPIO, 0);
         g_lightStatus = 0;
     }
     printf("[E53_SC1] Brightness set to %d%%\r\n", brightness);
@@ -132,6 +161,6 @@ uint8_t E53_SC1GetBrightness(void)
 /* 按键初始化 - 暂时禁用 */
 int E53_SC1ButtonInit(void)
 {
-    printf("[E53_SC1] Button disabled (debug mode)\r\n");
+    printf("[E53_SC1] Button disabled\r\n");
     return 0;
 }

@@ -37,8 +37,8 @@
 
 /* 智慧台灯新增定义 */
 #define E53_SC1_BUTTON_GPIO     E53_IO_6    /* 按键引脚 */
-#define E53_SC1_PWM_NUM         0           /* PWM 设备号 */
-#define E53_SC1_PWM_PERIOD      1000000     /* PWM 周期 1ms (ns) */
+#define E53_SC1_PWM_NUM         3           /* PWM3: TIM3_CH4 / PB1 / E53_IO_5 */
+#define E53_SC1_PWM_PERIOD      1000        /* TIM3 PWM period counter */
 #define E53_SC1_PWM_MAX_DUTY    1000000     /* 最大占空比 */
 #define E53_SC1_BRIGHTNESS_MAX  100
 #define E53_SC1_BRIGHTNESS_MIN  0
@@ -59,4 +59,3 @@ int E53_SC1ButtonInit(void);
 
 
 #endif /* __E53_SC1_H__ */
-
