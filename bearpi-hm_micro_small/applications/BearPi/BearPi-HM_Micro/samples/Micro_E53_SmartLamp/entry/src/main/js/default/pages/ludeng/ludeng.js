@@ -26,7 +26,9 @@ export default {
         timerInterval: 0,
         currentScene: 'custom',
         customBrightness: 50,
+        lastBrightness: 50,
         selectedTimer: 0,
+        timerDelay: 600,
         timerRemaining: 0,
         timerDisplay: ''
     },
@@ -76,9 +78,14 @@ export default {
         if (isNaN(brightness)) {
             brightness = 0;
         }
+        if (brightness > 0) {
+            this.lastBrightness = brightness;
+        }
         if (data.LED !== 'ON') {
             this.currentScene = 'custom';
-            this.customBrightness = brightness;
+            if (brightness > 0) {
+                this.customBrightness = brightness;
+            }
             return;
         }
         if (brightness === sceneBrightness.read) {
@@ -128,6 +135,14 @@ export default {
     },
 
     turnOn() {
+        var brightness = Number(this.mydata.Brightness);
+        if (isNaN(brightness) || brightness <= 0) {
+            brightness = this.lastBrightness > 0 ? this.lastBrightness : 50;
+            this.currentScene = 'custom';
+            this.customBrightness = brightness;
+            this.sendBrightness(brightness);
+            return;
+        }
         this.sendPower('ON');
     },
 
@@ -136,7 +151,11 @@ export default {
     },
 
     toggleLight() {
-        this.sendPower(this.mydata.LED === 'ON' ? 'OFF' : 'ON');
+        if (this.mydata.LED === 'ON') {
+            this.sendPower('OFF');
+            return;
+        }
+        this.turnOn();
     },
 
     queryData() {
@@ -159,7 +178,38 @@ export default {
         }
         this.currentScene = 'custom';
         this.customBrightness = brightness;
+        if (brightness > 0) {
+            this.lastBrightness = brightness;
+        }
         this.sendBrightness(brightness);
+    },
+
+    adjustBrightness(step) {
+        var brightness = Number(this.mydata.Brightness);
+        if (isNaN(brightness)) {
+            brightness = 0;
+        }
+        brightness += step;
+        if (brightness < 0) {
+            brightness = 0;
+        }
+        if (brightness > 100) {
+            brightness = 100;
+        }
+        this.currentScene = 'custom';
+        this.customBrightness = brightness;
+        if (brightness > 0) {
+            this.lastBrightness = brightness;
+        }
+        this.sendBrightness(brightness);
+    },
+
+    brightnessMinus() {
+        this.adjustBrightness(-5);
+    },
+
+    brightnessPlus() {
+        this.adjustBrightness(5);
     },
 
     setScene(scene) {
@@ -200,6 +250,7 @@ export default {
             return;
         }
         this.selectedTimer = minutes;
+        this.timerDelay = minutes * 60;
         this.timerRemaining = minutes * 60;
         this.updateTimerDisplay();
         this.timerInterval = setInterval(() => {
@@ -223,6 +274,62 @@ export default {
 
     timer60() {
         this.setTimer(60);
+    },
+
+    changeTimerDelay(e) {
+        var delay = Number(e.value);
+        if (isNaN(delay)) {
+            delay = 600;
+        }
+        if (delay < 10) {
+            delay = 10;
+        }
+        if (delay > 3600) {
+            delay = 3600;
+        }
+        this.timerDelay = delay;
+        this.setTimerBySeconds(delay);
+    },
+
+    setTimerBySeconds(seconds) {
+        var that = this;
+        if (this.timerInterval) {
+            clearInterval(this.timerInterval);
+            this.timerInterval = 0;
+        }
+        if (seconds <= 0) {
+            this.cancelTimer();
+            return;
+        }
+        this.selectedTimer = Math.ceil(seconds / 60);
+        this.timerDelay = seconds;
+        this.timerRemaining = seconds;
+        this.updateTimerDisplay();
+        this.timerInterval = setInterval(() => {
+            that.timerRemaining--;
+            if (that.timerRemaining <= 0) {
+                that.autoOff();
+                that.cancelTimer();
+                return;
+            }
+            that.updateTimerDisplay();
+        }, 1000);
+    },
+
+    timerMinus() {
+        var delay = this.timerDelay - 60;
+        if (delay < 10) {
+            delay = 10;
+        }
+        this.setTimerBySeconds(delay);
+    },
+
+    timerPlus() {
+        var delay = this.timerDelay + 60;
+        if (delay > 3600) {
+            delay = 3600;
+        }
+        this.setTimerBySeconds(delay);
     },
 
     cancelTimer() {

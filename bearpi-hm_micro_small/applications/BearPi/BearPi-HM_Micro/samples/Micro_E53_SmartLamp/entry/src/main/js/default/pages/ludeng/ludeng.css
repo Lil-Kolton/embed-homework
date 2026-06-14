@@ -182,13 +182,45 @@
     color: #FFD700;
 }
 
-.brightness-slider {
-    width: 100%;
+.brightness-slider,
+.timer-slider {
+    width: 72%;
     height: 36px;
     color: #00D2BE;
     background-color: #434343;
     selected-color: #00D2BE;
     block-color: #FFD700;
+}
+
+.timer-slider {
+    selected-color: #FFD700;
+    block-color: #00D2BE;
+}
+
+.adjust-row {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.adjust-btn {
+    width: 44px;
+    height: 36px;
+    background-color: #434343;
+    border-radius: 10px;
+    justify-content: center;
+    align-items: center;
+}
+
+.adjust-text {
+    font-size: 24px;
+    color: #FFFFFF;
+    font-weight: bold;
+}
+
+.timer-delay-head {
+    margin-bottom: 6px;
 }
 
 .quick-row {

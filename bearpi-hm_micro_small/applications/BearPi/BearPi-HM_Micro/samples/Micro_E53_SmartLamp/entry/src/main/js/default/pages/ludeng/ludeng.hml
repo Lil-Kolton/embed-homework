@@ -53,7 +53,15 @@
                 <text class="panel-title">亮度调节</text>
                 <text class="panel-value">{{ mydata.Brightness }}%</text>
             </div>
-            <slider class="brightness-slider" min="0" max="100" value="{{ mydata.Brightness }}" onchange="onBrightnessChange"></slider>
+            <div class="adjust-row">
+                <div class="adjust-btn" onclick="brightnessMinus">
+                    <text class="adjust-text">-</text>
+                </div>
+                <slider class="brightness-slider" min="0" max="100" value="{{ mydata.Brightness }}" onchange="onBrightnessChange"></slider>
+                <div class="adjust-btn" onclick="brightnessPlus">
+                    <text class="adjust-text">+</text>
+                </div>
+            </div>
             <div class="quick-row">
                 <div class="quick-btn" onclick="turnOn">
                     <text class="quick-btn-text">开灯</text>
@@ -102,6 +110,18 @@
             <div class="panel-head">
                 <text class="panel-title">定时关灯</text>
                 <text class="timer-status" if="{{ timerRemaining > 0 }}">{{ timerDisplay }}</text>
+            </div>
+            <div class="panel-head timer-delay-head">
+                <text class="panel-tip">滑动定时 {{ timerDelay }} 秒</text>
+            </div>
+            <div class="adjust-row">
+                <div class="adjust-btn" onclick="timerMinus">
+                    <text class="adjust-text">-</text>
+                </div>
+                <slider class="timer-slider" min="10" max="3600" value="{{ timerDelay }}" onchange="changeTimerDelay"></slider>
+                <div class="adjust-btn" onclick="timerPlus">
+                    <text class="adjust-text">+</text>
+                </div>
             </div>
             <div class="timer-row">
                 <div class="timer-btn" style="background-color: {{ t10Bg }}; border-color: {{ t10Border }};" onclick="timer10">
