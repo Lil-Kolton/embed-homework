@@ -20,9 +20,11 @@
 #include "osal_time.h"
 
 
+/* HDF 返回给应用侧的灯状态和光照数据缓存 */
 static uint8_t LightStatus;
 static float lux_data;
 
+/* 应用层通过 HDF dispatch 发送的控制命令编号 */
 typedef enum {
     E53_SC1_Start = 0,
     E53_SC1_Stop,
@@ -31,6 +33,7 @@ typedef enum {
     E53_SC1_SetBrightness,
 }E53_SC1Ctrl;
 
+/* 统一处理应用侧 start/stop/read/light/brightness 命令 */
 int32_t E53_SC1_DriverDispatch(struct HdfDeviceIoClient *client, int cmdCode, struct HdfSBuf *data, struct HdfSBuf *reply)
 {
     int ret = -1;
@@ -135,6 +138,7 @@ int32_t E53_SC1_DriverDispatch(struct HdfDeviceIoClient *client, int cmdCode, st
 }
 
 
+/* 绑定 HDF 服务，让应用可通过设备节点调用 Dispatch */
 static int32_t Hdf_E53_SC1_DriverBind(struct HdfDeviceObject *deviceObject)
 {
     if (deviceObject == NULL) {
@@ -149,6 +153,7 @@ static int32_t Hdf_E53_SC1_DriverBind(struct HdfDeviceObject *deviceObject)
     return HDF_SUCCESS;
 }
 
+/* HDF 加载驱动时自动初始化硬件，保证本地按键上电即可使用 */
 static int32_t Hdf_E53_SC1_DriverInit(struct HdfDeviceObject *device)
 {
     (void)device;
@@ -170,6 +175,7 @@ void Hdf_E53_SC1_DriverRelease(struct HdfDeviceObject *deviceObject)
     return;
 }
 
+/* HDF 驱动入口，注册模块名和生命周期函数 */
 static struct HdfDriverEntry g_E53DriverEntry = {
     .moduleVersion = 1,
     .moduleName = "HDF_E53_SC1",

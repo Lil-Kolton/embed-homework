@@ -18,13 +18,15 @@
 
 #include <stdint.h>
 
+/* BH1750 光照传感器 I2C 地址 */
 #define BH1750_ADDR 0x23
 #define BH1750_SEND_DATA_LEN 2
 #define BH1750_RECV_DATA_LEN 2
 #define BH1750_READ_DELAY_US 180000
 #define BH1750_COEFFICIENT_LUX 1.2
-#define DATA_WIDTH_8_BIT         8 // 8 bit
+#define DATA_WIDTH_8_BIT         8
 
+/* GPIO 引脚定义（原 E53_SC1 传感器接口） */
 #define E53_SC1_LIGHT_GPIO 7
 #define E53_SC1_I2C1_SDA_GPIO 0
 #define E53_SC1_I2C1_SCL_GPIO 1
@@ -35,10 +37,10 @@
 #define WIFI_IOT_I2C_IDX_1 1
 #define WIFI_IOT_I2C_BAUDRATE 400000
 
-/* 智慧台灯新增定义 */
-#define E53_SC1_BUTTON_GPIO     98          /* USER_KEY1/S2: PG2, active low */
+/* 智慧台灯：按键和 PWM 定义 */
+#define E53_SC1_BUTTON_GPIO     98          /* USER_KEY1/S2: PG2，低电平有效 */
 #define E53_SC1_PWM_NUM         3           /* PWM3: TIM3_CH4 / PB1 / E53_IO_5 */
-#define E53_SC1_PWM_PERIOD      1000        /* TIM3 PWM period counter */
+#define E53_SC1_PWM_PERIOD      1000        /* TIM3 计数器周期值（非纳秒） */
 #define E53_SC1_PWM_MAX_DUTY    1000000     /* 最大占空比 */
 #define E53_SC1_BRIGHTNESS_MAX  100
 #define E53_SC1_BRIGHTNESS_MIN  0
@@ -48,14 +50,15 @@ typedef enum {
     ON
 } E53SC1Status;
 
+/* 基础接口 */
 int E53_SC1Init(void);
 int E53_SC1DeInit(void);
 int E53_SC1ReadData(float *data);
 void E53_SC1LightStatusSet(E53SC1Status status);
-/* 智慧台灯新增函数 */
+
+/* 智慧台灯：PWM 调光与按键 */
 int E53_SC1SetBrightness(uint8_t brightness);
 uint8_t E53_SC1GetBrightness(void);
 int E53_SC1ButtonInit(void);
-
 
 #endif /* __E53_SC1_H__ */

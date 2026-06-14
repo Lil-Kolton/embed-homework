@@ -16,9 +16,15 @@
 #include "osal_time.h"
 #include "osal_thread.h"
 
+/* 按键轮询线程参数：20ms 扫描，长按 800ms，双击窗口 400ms */
 #define E53_SC1_BUTTON_THREAD_STACK 0x1000
 #define E53_SC1_BUTTON_SCAN_MS 20
 #define E53_SC1_BUTTON_DEBOUNCE_MS 300
+#define E53_SC1_BUTTON_DOUBLE_MS 400
+#define E53_SC1_BUTTON_LONG_MS 800
+#define E53_SC1_BUTTON_ADJUST_MS 180
+#define E53_SC1_BRIGHTNESS_STEP 5
+#define E53_SC1_BRIGHTNESS_DIM_MIN 0
 #define E53_SC1_DEFAULT_BRIGHTNESS 80
 
 /* 全局变量 */
@@ -30,27 +36,138 @@ static uint8_t g_pwmReady = 0;
 static uint8_t g_buttonThreadRunning = 0;
 static struct OsalThread g_buttonThread;
 
+/* 按键状态机：单击开关，单次长按变亮，双击后长按变暗 */
+typedef enum {
+    E53_SC1_KEY_IDLE = 0,
+    E53_SC1_KEY_FIRST_DOWN,
+    E53_SC1_KEY_WAIT_SECOND,
+    E53_SC1_KEY_SECOND_DOWN,
+    E53_SC1_KEY_LONG_BRIGHTEN,
+    E53_SC1_KEY_LONG_DIM,
+} E53_SC1KeyState;
+
+/* 单击按键后切换灯光开关状态 */
+static void E53_SC1ButtonToggleLight(void)
+{
+    if (g_lightStatus) {
+        E53_SC1LightStatusSet(OFF);
+    } else {
+        E53_SC1LightStatusSet(ON);
+    }
+    printf("[E53_SC1] Button click: LED=%s, Brightness=%d%%\r\n",
+        g_lightStatus ? "ON" : "OFF", g_brightness);
+}
+
+/* direction 为正表示调亮，为负表示调暗 */
+static void E53_SC1ButtonAdjustBrightness(int direction)
+{
+    int brightness;
+
+    if (!g_lightStatus && direction > 0) {
+        E53_SC1LightStatusSet(ON);
+    }
+    if (g_brightness == 0) {
+        g_brightness = g_lastBrightness;
+    }
+
+    brightness = g_brightness + (direction * E53_SC1_BRIGHTNESS_STEP);
+    if (direction > 0 && brightness > E53_SC1_BRIGHTNESS_MAX) {
+        brightness = E53_SC1_BRIGHTNESS_MAX;
+    }
+    if (direction < 0 && brightness < E53_SC1_BRIGHTNESS_DIM_MIN) {
+        brightness = E53_SC1_BRIGHTNESS_DIM_MIN;
+    }
+    E53_SC1SetBrightness((uint8_t)brightness);
+    printf("[E53_SC1] Button long %s, Brightness=%d%%\r\n",
+        direction > 0 ? "brighten" : "dim", g_brightness);
+}
+
+/* 使用轮询方式读取 USER_KEY1/S2，避免依赖当前 GPIO IRQ 回调实现 */
 static int E53_SC1ButtonThread(void *arg)
 {
     (void)arg;
-    uint8_t lastPressed = 0;
+    E53_SC1KeyState state = E53_SC1_KEY_IDLE;
+    uint32_t pressMs = 0;
+    uint32_t waitMs = 0;
+    uint32_t adjustMs = 0;
 
     while (g_buttonThreadRunning) {
         uint16_t level = E53_Level_High;
         if (GpioRead(E53_SC1_BUTTON_GPIO, &level) == 0) {
             uint8_t pressed = (level == E53_Level_Down) ? 1 : 0;
-            if (pressed && !lastPressed) {
-                printf("[E53_SC1] USER_KEY1/S2 pressed\r\n");
-                if (g_lightStatus) {
-                    E53_SC1LightStatusSet(OFF);
-                } else {
-                    E53_SC1LightStatusSet(ON);
-                }
-                printf("[E53_SC1] Button action: LED=%s, Brightness=%d%%\r\n",
-                    g_lightStatus ? "ON" : "OFF", g_brightness);
-                OsalMSleep(E53_SC1_BUTTON_DEBOUNCE_MS);
+
+            switch (state) {
+                case E53_SC1_KEY_IDLE:
+                    if (pressed) {
+                        printf("[E53_SC1] USER_KEY1/S2 pressed\r\n");
+                        pressMs = 0;
+                        state = E53_SC1_KEY_FIRST_DOWN;
+                    }
+                    break;
+                case E53_SC1_KEY_FIRST_DOWN:
+                    if (pressed) {
+                        pressMs += E53_SC1_BUTTON_SCAN_MS;
+                        if (pressMs >= E53_SC1_BUTTON_LONG_MS) {
+                            E53_SC1ButtonAdjustBrightness(1);
+                            adjustMs = 0;
+                            state = E53_SC1_KEY_LONG_BRIGHTEN;
+                        }
+                    } else {
+                        waitMs = 0;
+                        state = E53_SC1_KEY_WAIT_SECOND;
+                    }
+                    break;
+                case E53_SC1_KEY_WAIT_SECOND:
+                    if (pressed) {
+                        printf("[E53_SC1] USER_KEY1/S2 second press\r\n");
+                        pressMs = 0;
+                        state = E53_SC1_KEY_SECOND_DOWN;
+                    } else {
+                        waitMs += E53_SC1_BUTTON_SCAN_MS;
+                        if (waitMs >= E53_SC1_BUTTON_DOUBLE_MS) {
+                            E53_SC1ButtonToggleLight();
+                            state = E53_SC1_KEY_IDLE;
+                        }
+                    }
+                    break;
+                case E53_SC1_KEY_SECOND_DOWN:
+                    if (pressed) {
+                        pressMs += E53_SC1_BUTTON_SCAN_MS;
+                        if (pressMs >= E53_SC1_BUTTON_LONG_MS) {
+                            E53_SC1ButtonAdjustBrightness(-1);
+                            adjustMs = 0;
+                            state = E53_SC1_KEY_LONG_DIM;
+                        }
+                    } else {
+                        state = E53_SC1_KEY_IDLE;
+                    }
+                    break;
+                case E53_SC1_KEY_LONG_BRIGHTEN:
+                    if (pressed) {
+                        adjustMs += E53_SC1_BUTTON_SCAN_MS;
+                        if (adjustMs >= E53_SC1_BUTTON_ADJUST_MS) {
+                            E53_SC1ButtonAdjustBrightness(1);
+                            adjustMs = 0;
+                        }
+                    } else {
+                        state = E53_SC1_KEY_IDLE;
+                    }
+                    break;
+                case E53_SC1_KEY_LONG_DIM:
+                    if (pressed) {
+                        adjustMs += E53_SC1_BUTTON_SCAN_MS;
+                        if (adjustMs >= E53_SC1_BUTTON_ADJUST_MS) {
+                            E53_SC1ButtonAdjustBrightness(-1);
+                            adjustMs = 0;
+                        }
+                    } else {
+                        state = E53_SC1_KEY_IDLE;
+                    }
+                    break;
+                default:
+                    state = E53_SC1_KEY_IDLE;
+                    break;
             }
-            lastPressed = pressed;
         } else {
             printf("[E53_SC1] USER_KEY1/S2 read failed\r\n");
             OsalMSleep(E53_SC1_BUTTON_DEBOUNCE_MS);
@@ -60,6 +177,7 @@ static int E53_SC1ButtonThread(void *arg)
     return 0;
 }
 
+/* 初始化 PWM3，周期值为 TIM 计数器周期，不是纳秒单位 */
 static int E53_SC1PwmInit(void)
 {
     int ret;
@@ -74,6 +192,7 @@ static int E53_SC1PwmInit(void)
         return -1;
     }
 
+    /* 先设置极小占空比启动 PWM，后续调光只更新 duty */
     E53_PWMSet(E53_SC1_PWM_PERIOD, 1);
     E53_PWMStart();
     g_pwmReady = 1;
@@ -217,6 +336,7 @@ uint8_t E53_SC1GetBrightness(void)
     return g_brightness;
 }
 
+/* 初始化 USER_KEY1/S2 输入引脚，并启动后台轮询线程 */
 int E53_SC1ButtonInit(void)
 {
     int ret;
