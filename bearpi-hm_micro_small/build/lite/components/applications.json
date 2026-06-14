@@ -6,11 +6,13 @@
           "optional": "true",
           "dirs": [
             "applications/BearPi/BearPi-HM_Micro/samples/launcher",
-            "applications/BearPi/BearPi-HM_Micro/samples/setting"
+            "applications/BearPi/BearPi-HM_Micro/samples/setting",
+            "applications/BearPi/BearPi-HM_Micro/samples/Micro_E53_SmartLamp"
           ],
           "targets": [
             "//applications/BearPi/BearPi-HM_Micro/samples/launcher:launcher_hap",
-            "//applications/BearPi/BearPi-HM_Micro/samples/setting:setting_hap"
+            "//applications/BearPi/BearPi-HM_Micro/samples/setting:setting_hap",
+            "//applications/BearPi/BearPi-HM_Micro/samples/Micro_E53_SmartLamp:Micro_E53_SmartLamp_hap"
           ],
           "rom": "",
           "ram": "",
@@ -105,4 +107,3 @@
         }
     ]
   }
-  

@@ -1,13 +1,130 @@
-<div class="container">
-    <div class="header">
-        <text class="title">智慧台灯</text>
-    </div>
-    <div class="content">
-        <text class="status">状态: {{mydata.LED}}</text>
-        <text class="lux">光照: {{mydata.Lux}} lx</text>
-        <text class="brightness">亮度: {{mydata.Brightness}}%</text>
-        <div class="btn" onclick="toggleLight">
-            <text class="btn-text">{{mydata.LED == 'ON' ? '关灯' : '开灯'}}</text>
+<list class="container">
+    <list-item class="header-item">
+        <div class="header">
+            <div class="back-view" onclick="toback">
+                <image class="back-img" src="../../common/ic_back.png"/>
+                <text class="back-btn">退出</text>
+            </div>
+            <text class="title">智慧台灯</text>
+            <text class="header-state" if="{{ mydata.LED == 'ON' }}">在线</text>
+            <text class="header-state" if="{{ mydata.LED == 'OFF' }}">待机</text>
         </div>
-    </div>
-</div>
+    </list-item>
+
+    <list-item class="hero-item">
+        <div class="hero">
+            <div class="lamp-ring" style="background-color: {{ ringBg }}; border-color: {{ ringBorder }};">
+                <image class="lamp-icon" src="../../common/deng.png"/>
+            </div>
+            <text class="status-text" if="{{ mydata.LED == 'ON' }}">已开启</text>
+            <text class="status-text" if="{{ mydata.LED == 'OFF' }}">已关闭</text>
+            <text class="status-subtext">当前亮度 {{ mydata.Brightness }}%</text>
+        </div>
+    </list-item>
+
+    <list-item class="cards-item">
+        <div class="cards-row">
+            <div class="card">
+                <div class="card-top">
+                    <image class="card-icon" src="../../common/airLux.png"/>
+                    <div class="card-info">
+                        <text class="card-value">{{ mydata.Lux }}</text>
+                        <text class="card-unit">Lux</text>
+                    </div>
+                </div>
+                <text class="card-label">环境光照</text>
+            </div>
+            <div class="card">
+                <div class="card-top">
+                    <image class="card-icon" src="../../common/deng.png"/>
+                    <div class="card-info">
+                        <text class="card-value">{{ mydata.Brightness }}</text>
+                        <text class="card-unit">%</text>
+                    </div>
+                </div>
+                <text class="card-label">当前亮度</text>
+            </div>
+        </div>
+    </list-item>
+
+    <list-item class="panel-item">
+        <div class="panel">
+            <div class="panel-head">
+                <text class="panel-title">亮度调节</text>
+                <text class="panel-value">{{ mydata.Brightness }}%</text>
+            </div>
+            <slider class="brightness-slider" min="0" max="100" value="{{ mydata.Brightness }}" onchange="onBrightnessChange"></slider>
+            <div class="quick-row">
+                <div class="quick-btn" onclick="turnOn">
+                    <text class="quick-btn-text">开灯</text>
+                </div>
+                <div class="quick-btn" onclick="turnOff">
+                    <text class="quick-btn-text">关灯</text>
+                </div>
+                <div class="quick-btn" onclick="toggleLight">
+                    <text class="quick-btn-text">切换</text>
+                </div>
+            </div>
+        </div>
+    </list-item>
+
+    <list-item class="panel-item">
+        <div class="panel">
+            <div class="panel-head">
+                <text class="panel-title">场景模式</text>
+                <text class="panel-tip">阅读 / 休闲 / 夜灯 / 自定义</text>
+            </div>
+            <div class="scene-row">
+                <div class="scene-btn" style="background-color: {{ cReadBg }}; border-color: {{ cReadBorder }};" onclick="sceneRead">
+                    <text class="scene-name">阅读</text>
+                    <text class="scene-value">100%</text>
+                </div>
+                <div class="scene-btn" style="background-color: {{ cRelaxBg }}; border-color: {{ cRelaxBorder }};" onclick="sceneRelax">
+                    <text class="scene-name">休闲</text>
+                    <text class="scene-value">60%</text>
+                </div>
+            </div>
+            <div class="scene-row scene-row-last">
+                <div class="scene-btn" style="background-color: {{ cNightBg }}; border-color: {{ cNightBorder }};" onclick="sceneNight">
+                    <text class="scene-name">夜灯</text>
+                    <text class="scene-value">10%</text>
+                </div>
+                <div class="scene-btn" style="background-color: {{ cCustomBg }}; border-color: {{ cCustomBorder }};" onclick="sceneCustom">
+                    <text class="scene-name">自定义</text>
+                    <text class="scene-value">{{ customBrightness }}%</text>
+                </div>
+            </div>
+        </div>
+    </list-item>
+
+    <list-item class="panel-item">
+        <div class="panel">
+            <div class="panel-head">
+                <text class="panel-title">定时关灯</text>
+                <text class="timer-status" if="{{ timerRemaining > 0 }}">{{ timerDisplay }}</text>
+            </div>
+            <div class="timer-row">
+                <div class="timer-btn" style="background-color: {{ t10Bg }}; border-color: {{ t10Border }};" onclick="timer10">
+                    <text class="timer-value">10</text>
+                    <text class="timer-unit">分钟</text>
+                </div>
+                <div class="timer-btn" style="background-color: {{ t30Bg }}; border-color: {{ t30Border }};" onclick="timer30">
+                    <text class="timer-value">30</text>
+                    <text class="timer-unit">分钟</text>
+                </div>
+                <div class="timer-btn" style="background-color: {{ t60Bg }}; border-color: {{ t60Border }};" onclick="timer60">
+                    <text class="timer-value">60</text>
+                    <text class="timer-unit">分钟</text>
+                </div>
+                <div class="timer-btn" style="background-color: #3a3a3a; border-color: #3a3a3a;" if="{{ timerRemaining > 0 }}" onclick="cancelTimer">
+                    <text class="timer-value">取消</text>
+                    <text class="timer-unit">定时</text>
+                </div>
+            </div>
+        </div>
+    </list-item>
+
+    <list-item class="footer-item">
+        <text class="footer-text">实时轮询 · 自动同步 · 亮度联动</text>
+    </list-item>
+</list>

@@ -7,7 +7,7 @@ import("//build/lite/config/hap_pack.gni")
 hap_pack("Micro_E53_SmartLamp_hap") {
   mode = "hap"
   json_path = "entry/src/main/config.json"
-  assets_path = "entry/src/main/js"
+  assets_path = "entry/src/main"
   resources_path = "entry/src/main/resources"
   force = "true"
   hap_name = "Micro_E53_SmartLamp"
