@@ -36,7 +36,7 @@
 #define WIFI_IOT_I2C_BAUDRATE 400000
 
 /* 智慧台灯新增定义 */
-#define E53_SC1_BUTTON_GPIO     E53_IO_6    /* 按键引脚 */
+#define E53_SC1_BUTTON_GPIO     98          /* USER_KEY1/S2: PG2, active low */
 #define E53_SC1_PWM_NUM         3           /* PWM3: TIM3_CH4 / PB1 / E53_IO_5 */
 #define E53_SC1_PWM_PERIOD      1000        /* TIM3 PWM period counter */
 #define E53_SC1_PWM_MAX_DUTY    1000000     /* 最大占空比 */

@@ -151,6 +151,12 @@ static int32_t Hdf_E53_SC1_DriverBind(struct HdfDeviceObject *deviceObject)
 
 static int32_t Hdf_E53_SC1_DriverInit(struct HdfDeviceObject *device)
 {
+    (void)device;
+    if (E53_SC1Init() != 0) {
+        HDF_LOGE("E53 SC1 auto init failed");
+        return HDF_FAILURE;
+    }
+    HDF_LOGI("E53 SC1 auto init success");
     return HDF_SUCCESS;
 }
 
