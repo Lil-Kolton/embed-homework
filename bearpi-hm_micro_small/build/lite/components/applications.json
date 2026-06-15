@@ -90,10 +90,12 @@
           "description": "Communication related samples.",
           "optional": "true",
           "dirs": [
-            "applications/BearPi/BearPi-HM_Micro/samples/communication"
+            "applications/BearPi/BearPi-HM_Micro/samples/communication",
+            "applications/BearPi/BearPi-HM_Micro/samples/huawei_mqtt_demo"
           ],
           "targets": [
-            "//applications/BearPi/BearPi-HM_Micro/samples/communication:sample"
+            "//applications/BearPi/BearPi-HM_Micro/samples/communication:sample",
+            "//applications/BearPi/BearPi-HM_Micro/samples/huawei_mqtt_demo:huawei_mqtt_demo"
           ],
           "rom": "",
           "ram": "",
